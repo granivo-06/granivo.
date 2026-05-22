@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Granivo Red Rice – Premium Quality</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Plus Jakarta Sans', 'system-ui', 'sans-serif'] },
+                }
+            }
+        }
+    </script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Plus Jakarta Sans', system-ui, sans-serif; }
+
+        ::selection { background: #881337; color: #fff; }
+
+        /* Reveal Animation */
+        .reveal {
+            opacity: 0;
+            transform: translateY(24px);
+            transition: opacity 0.8s cubic-bezier(0.25, 1, 0.5, 1),
+                        transform 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+        .reveal.active { opacity: 1; transform: translateY(0); }
+
+        /* Hero Video Overlay */
+        .hero-overlay {
+            background: linear-gradient(to right, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,0.1) 100%);
+        }
+        .hero-overlay-bottom {
+            background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+        }
+
+        /* Shimmer Button */
+        .btn-shimmer { position: relative; overflow: hidden; }
+        .btn-shimmer::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(from 270deg, transparent 0deg, rgba(255,255,255,0.3) 90deg, transparent 90deg);
+            animation: shimmer 4s linear infinite;
+        }
+        .btn-shimmer::after {
+            content: attr(data-text);
+            position: absolute;
+            inset: 2px;
+            border-radius: inherit;
+            background: inherit;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: inherit;
+            font-weight: inherit;
+            font-size: inherit;
+        }
+        @keyframes shimmer { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+        /* Gallery Grid */
+        .gallery-item { overflow: hidden; border-radius: 16px; cursor: pointer; position: relative; }
+        .gallery-item img { transition: transform 0.7s cubic-bezier(0.25, 1, 0.5, 1); }
+        .gallery-item:hover img { transform: scale(1.05); }
+        .gallery-item .overlay {
+            position: absolute; inset: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.6), transparent);
+            opacity: 0;
+            transition: opacity 0.4s;
+        }
+        .gallery-item:hover .overlay { opacity: 1; }
+
+        /* Lightbox */
+        .lightbox {
+            position: fixed; inset: 0; z-index: 9999;
+            background: rgba(0,0,0,0.92);
+            backdrop-filter: blur(12px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .lightbox.open { display: flex; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .lightbox img, .lightbox video {
+            max-width: 90vw;
+            max-height: 85vh;
+            border-radius: 16px;
+            object-fit: contain;
+        }
+
+        /* Price Strike */
+        .price-strike { position: relative; display: inline-block; }
+        .price-strike::after {
+            content: '';
+            position: absolute;
+            left: -4px; right: -4px;
+            top: 50%;
+            height: 3px;
+            background: #dc2626;
+            transform: rotate(-8deg);
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #1c1917;
+            color: #fff;
+            padding: 14px 28px;
+            border-radius: 12px;
+            z-index: 99999;
+            font-size: 14px;
+            font-weight: 600;
+            transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+        .toast.show { transform: translateX(-50%) translateY(0); }
+
+        /* Floating shapes */
+        .float-shape {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.15;
+            animation: floatAnim 8s ease-in-out infinite;
+        }
+        @keyframes floatAnim {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-30px) scale(1.05); }
+        }
+
+        /* Nav scroll */
+        .nav-scrolled {
+            background: rgba(255,255,255,0.9) !important;
+            backdrop-filter: blur(12px) !important;
+            box-shadow: 0 1px 20px rgba(0,0,0,0.06) !important;
+        }
+        .nav-scrolled .nav-link { color: #1c1917 !important; }
+        .nav-scrolled .nav-logo-text { color: #1c1917 !important; }
+        .nav-scrolled .nav-cta { background: #1c1917 !important; color: #fff !important; }
+
+        /* Counter Animation */
+        @keyframes countUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .count-anim { animation: countUp 0.6s ease forwards; }
+
+        /* Mobile Menu */
+        .mobile-menu {
+            position: fixed;
+            inset: 0;
+            z-index: 100;
+            background: rgba(255,255,255,0.98);
+            backdrop-filter: blur(20px);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 32px;
+        }
+        .mobile-menu.open { display: flex; animation: fadeIn 0.3s ease; }
+        .mobile-menu a { font-size: 24px; font-weight: 600; color: #1c1917; }
+    </style>
+</head>
+<body class="bg-white text-stone-900 antialiased">
+
+    <!-- ==================== HEADER ==================== -->
+    <header id="header" class="fixed top-0 left-0 right-0 z-50 transition-all duration-500 py-5">
+        <div class="max-w-screen-2xl mx-auto px-6 lg:px-10 flex items-center justify-between">
+            <!-- Logo -->
+            <a href="#" class="flex items-center gap-3 group">
+                <img src="https://cdn.phototourl.com/member/2026-05-22-7e95c039-b783-4163-94e8-61a03c49ae7f.jpg" 
+                     alt="Granivo Logo" 
+                     class="w-10 h-10 rounded-full object-cover ring-2 ring-white/20 group-hover:ring-white/40 transition-all">
+                <span class="nav-logo-text text-white font-bold text-xl tracking-tight transition-colors">Granivo</span>
+            </a>
+
+            <!-- Desktop Nav -->
+            <nav class="hidden lg:flex items-center gap-10">
+                <a href="#home" class="nav-link text-white/80 hover:text-white text-sm font-semibold tracking-wide transition-colors">Home</a>
+                <a href="#about" class="nav-link text-white/80 hover:text-white text-sm font-semibold tracking-wide transition-colors">About</a>
+                <a href="#gallery" class="nav-link text-white/80 hover:text-white text-sm font-semibold tracking-wide transition-colors">Gallery</a>
+                <a href="#pricing" class="nav-link text-white/80 hover:text-white text-sm font-semibold tracking-wide transition-colors">Pricing</a>
+                <a href="#contact" class="nav-link text-white/80 hover:text-white text-sm font-semibold tracking-wide transition-colors">Contact</a>
+            </nav>
+
+            <!-- CTA + Hamburger -->
+            <div class="flex items-center gap-4">
+                <a href="#pricing" class="nav-cta hidden sm:inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white text-xs font-bold uppercase tracking-widest py-3 px-6 rounded-full border border-white/10 transition-all duration-300">
+                    Order Now
+                    <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                </a>
+                <button id="menuBtn" class="lg:hidden text-white p-2">
+                    <i data-lucide="menu" class="w-6 h-6"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Mobile Menu -->
+    <div id="mobileMenu" class="mobile-menu">
+        <button id="closeMenu" class="absolute top-6 right-6 p-2"><i data-lucide="x" class="w-7 h-7"></i></button>
+        <a href="#home" onclick="closeMobileMenu()">Home</a>
+        <a href="#about" onclick="closeMobileMenu()">About</a>
+        <a href="#gallery" onclick="closeMobileMenu()">Gallery</a>
+        <a href="#pricing" onclick="closeMobileMenu()">Pricing</a>
+        <a href="#contact" onclick="closeMobileMenu()">Contact</a>
+        <a href="#pricing" onclick="closeMobileMenu()" class="bg-stone-900 text-white py-3 px-8 rounded-full text-sm font-bold uppercase tracking-widest">Order Now</a>
+    </div>
+
+    <!-- ==================== HERO ==================== -->
+    <section id="home" class="relative min-h-screen flex items-center overflow-hidden">
+        <!-- Video Background -->
+        <div class="absolute inset-0">
+            <video id="heroVideo" autoplay muted loop playsinline 
+                   class="w-full h-full object-cover scale-105"
+                   poster="https://cdn.phototourl.com/free/2026-05-22-5ee0d093-f5be-4ea8-b0f5-fed07751f186.jpg">
+                <source src="https://www.image2url.com/r2/default/videos/1779430968070-e46eff45-54af-4861-9f79-638d5c49b56c.mp4" type="video/mp4">
+            </video>
+            <div class="hero-overlay absolute inset-0"></div>
+            <div class="hero-overlay-bottom absolute inset-0"></div>
+        </div>
+
+        <!-- Floating Shapes -->
+        <div class="float-shape w-[500px] h-[500px] bg-rose-600 -top-40 -right-40" style="animation-delay: 0s;"></div>
+        <div class="float-shape w-[400px] h-[400px] bg-amber-500 bottom-20 -left-40" style="animation-delay: 3s;"></div>
+
+        <!-- Content -->
+        <div class="relative z-10 max-w-screen-2xl mx-auto px-6 lg:px-10 pt-20 w-full">
+            <div class="grid lg:grid-cols-12 gap-12 lg:gap-20 items-center">
+                <!-- Text -->
+                <div class="lg:col-span-7 space-y-8">
+                    <div class="reveal">
+                        <span class="inline-flex items-center gap-2 bg-rose-600/20 backdrop-blur-sm text-rose-300 text-[10px] font-bold uppercase tracking-widest py-2 px-4 rounded-full border border-rose-500/20">
+                            <span class="w-1.5 h-1.5 rounded-full bg-rose-400 animate-pulse"></span>
+                            100% Natural & Organic
+                        </span>
+                    </div>
+                    <h1 class="reveal text-5xl sm:text-6xl lg:text-7xl font-bold text-white leading-[1.05] tracking-tighter">
+                        Premium<br>
+                        <span class="bg-clip-text text-transparent bg-gradient-to-r from-rose-400 to-amber-400">Red Rice</span><br>
+                        From Granivo
+                    </h1>
+                    <p class="reveal text-lg text-white/70 max-w-xl leading-relaxed">
+                        Nourish your body with the finest quality red rice — rich in antioxidants, fiber, and essential nutrients. Harvested naturally, delivered fresh to your doorstep.
+                    </p>
+                    <div class="reveal flex flex-wrap items-center gap-4">
+                        <a href="#pricing" class="btn-shimmer inline-flex items-center gap-3 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold uppercase tracking-widest py-4 px-8 rounded-full transition-all duration-300 hover:scale-105 hover:-translate-y-1 shadow-xl shadow-rose-900/30" data-text="Shop Now">
+                            <span class="relative z-10 flex items-center gap-3">Shop Now <i data-lucide="shopping-bag" class="w-4 h-4"></i></span>
+                        </a>
+                        <a href="#gallery" class="inline-flex items-center gap-3 bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white text-xs font-bold uppercase tracking-widest py-4 px-8 rounded-full border border-white/10 transition-all duration-300 hover:scale-105 hover:-translate-y-1">
+                            View Gallery <i data-lucide="image" class="w-4 h-4"></i>
+                        </a>
+                    </div>
+                    <!-- Stats -->
+                    <div class="reveal flex items-center gap-10 pt-4">
+                        <div>
+                            <div class="text-3xl font-bold text-white">50%</div>
+                            <div class="text-xs text-white/50 uppercase tracking-widest font-semibold mt-1">Off Today</div>
+                        </div>
+                        <div class="w-px h-12 bg-white/20"></div>
+                        <div>
+                            <div class="text-3xl font-bold text-white">100%</div>
+                            <div class="text-xs text-white/50 uppercase tracking-widest font-semibold mt-1">Natural</div>
+                        </div>
+                        <div class="w-px h-12 bg-white/20"></div>
+                        <div>
+                            <div class="text-3xl font-bold text-white">5K+</div>
+                            <div class="text-xs text-white/50 uppercase tracking-widest font-semibold mt-1">Happy Customers</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Image Card -->
+                <div class="lg:col-span-5 reveal">
+                    <div class="relative h-[70vh] w-full rounded-2xl overflow-hidden ring-1 ring-white/10 group">
+                        <img src="https://cdn.phototourl.com/free/2026-05-22-5ee0d093-f5be-4ea8-b0f5-fed07751f186.jpg" 
+                             alt="Red Rice" 
+                             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+                        <div class="absolute bottom-6 left-6 right-6">
+                            <div class="bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/10">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <p class="text-white/60 text-xs font-bold uppercase tracking-widest">Starting from</p>
+                                        <div class="flex items-center gap-3 mt-1">
+                                            <span class="text-3xl font-bold text-white">₹100</span>
+                                            <span class="price-strike text-white/40 text-lg font-semibold">₹200</span>
+                                        </div>
+                                    </div>
+                                    <a href="#pricing" class="bg-rose-600 hover:bg-rose-700 text-white p-3 rounded-full transition-all hover:scale-110">
+                                        <i data-lucide="arrow-right" class="w-5 h-5"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scroll Indicator -->
+        <div class="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-2 animate-bounce">
+            <span class="text-white/40 text-[10px] uppercase tracking-widest font-bold">Scroll</span>
+            <i data-lucide="chevron-down" class="w-4 h-4 text-white/40"></i>
+        </div>
+    </section>
+
+    <!-- ==================== ABOUT ==================== -->
+    <section id="about" class="py-24 lg:py-32 relative overflow-hidden">
+        <!-- BG Shape -->
+        <div class="float-shape w-[600px] h-[600px] bg-rose-200 top-0 right-0" style="animation-delay: 2s;"></div>
+
+        <div class="max-w-screen-2xl mx-auto px-6 lg:px-10 relative z-10">
+            <div class="grid lg:grid-cols-2 gap-16 lg:gap-24 items-center">
+                <!-- Image -->
+                <div class="reveal">
+                    <div class="relative rounded-2xl overflow-hidden shadow-2xl group">
+                        <img src="https://cdn.phototourl.com/free/2026-05-22-00f4b8d1-5548-41d6-861f-84c1688ae66d.jpg" 
+                             alt="Red Rice Fields" 
+                             class="w-full aspect-[4/5] object-cover group-hover:scale-105 transition-transform duration-700">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+                        <div class="absolute bottom-8 left-8">
+                            <span class="bg-white/10 backdrop-blur-md text-white text-xs font-bold uppercase tracking-widest py-2 px-5 rounded-full border border-white/20">
+                                🌾 Since Generations
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Content -->
+                <div class="space-y-8">
+                    <div class="reveal">
+                        <span class="inline-flex items-center gap-2 bg-rose-50 text-rose-700 text-[10px] font-bold uppercase tracking-widest py-2 px-4 rounded-full">
+                            <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
+                            Why Red Rice
+                        </span>
+                    </div>
+                    <h2 class="reveal text-3xl lg:text-5xl font-semibold tracking-tight leading-tight">
+                        The Super Grain<br>
+                        <span class="bg-clip-text text-transparent bg-gradient-to-r from-rose-600 to-amber-600">Your Body Deserves</span>
+                    </h2>
+                    <p class="reveal text-lg text-stone-500 leading-relaxed">
+                        Red rice is a nutritional powerhouse — packed with anthocyanins that give it the signature red color. Unlike white rice, our red rice retains its bran layer, delivering unmatched fiber, minerals, and health benefits.
+                    </p>
+
+                    <!-- Features -->
+                    <div class="space-y-6 pt-4">
+                        <div class="reveal flex items-start gap-4 group">
+                            <div class="flex-shrink-0 w-12 h-12 rounded-xl bg-rose-50 flex items-center justify-center group-hover:bg-rose-100 transition-colors">
+                                <i data-lucide="heart-pulse" class="w-5 h-5 text-rose-600"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-semibold tracking-tight">Heart Healthy</h3>
+                                <p class="text-stone-500 text-sm mt-1 leading-relaxed">Rich in magnesium and antioxidants that support cardiovascular health naturally.</p>
+                            </div>
+                        </div>
+                        <div class="reveal flex items-start gap-4 group">
+                            <div class="flex-shrink-0 w-12 h-12 rounded-xl bg-amber-50 flex items-center justify-center group-hover:bg-amber-100 transition-colors">
+                                <i data-lucide="wheat" class="w-5 h-5 text-amber-600"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-semibold tracking-tight">High in Fiber</h3>
+                                <p class="text-stone-500 text-sm mt-1 leading-relaxed">Contains 3x more fiber than white rice, promoting better digestion and gut health.</p>
+                            </div>
+                        </div>
+                        <div class="reveal flex items-start gap-4 group">
+                            <div class="flex-shrink-0 w-12 h-12 rounded-xl bg-green-50 flex items-center justify-center group-hover:bg-green-100 transition-colors">
+                                <i data-lucide="leaf" class="w-5 h-5 text-green-600"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-semibold tracking-tight">100% Organic</h3>
+                                <p class="text-stone-500 text-sm mt-1 leading-relaxed">No pesticides, no chemicals. Just pure, naturally grown red rice from trusted farms.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== GALLERY ==================== -->
+    <section id="gallery" class="py-24 lg:py-32 bg-stone-50 relative overflow-hidden">
+        <div class="max-w-screen-2xl mx-auto px-6 lg:px-10">
+            <!-- Header -->
+            <div class="text-center mb-16 space-y-4">
+                <div class="reveal">
+                    <span class="inline-flex items-center gap-2 bg-rose-50 text-rose-700 text-[10px] font-bold uppercase tracking-widest py-2 px-4 rounded-full">
+                        <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
+                        Gallery
+                    </span>
+                </div>
+                <h2 class="reveal text-3xl lg:text-5xl font-semibold tracking-tight">
+                    See the <span class="bg-clip-text text-transparent bg-gradient-to-r from-rose-600 to-amber-600">Quality</span>
+                </h2>
+                <p class="reveal text-stone-500 text-lg max-w-2xl mx-auto leading-relaxed">
+                    Explore our premium red rice — from farm to fork. Click on any image to view full size, or click the video to watch with sound.
+                </p>
+            </div>
+
+            <!-- Gallery Grid -->
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6">
+                <!-- Video Card (featured, spans 2 cols) -->
+                <div class="gallery-item col-span-2 row-span-2 reveal relative" onclick="openLightbox('video')">
+                    <div class="relative w-full h-full min-h-[300px] md:min-h-[400px]">
+                        <video muted loop playsinline class="w-full h-full object-cover rounded-2xl" 
+                               poster="https://cdn.phototourl.com/free/2026-05-22-3314b1ac-d51b-453f-b779-0a8da012d750.jpg"
+                               onmouseenter="this.play()" onmouseleave="this.pause();this.currentTime=0;">
+                            <source src="https://www.image2url.com/r2/default/videos/1779430968070-e46eff45-54af-4861-9f79-638d5c49b56c.mp4" type="video/mp4">
+                        </video>
+                        <div class="overlay rounded-2xl flex items-center justify-center">
+                            <div class="bg-white/20 backdrop-blur-md rounded-full p-5 border border-white/20 hover:scale-110 transition-transform">
+                                <i data-lucide="play" class="w-8 h-8 text-white fill-white"></i>
+                            </div>
+                        </div>
+                        <div class="absolute top-4 left-4 bg-rose-600 text-white text-[10px] font-bold uppercase tracking-widest py-1.5 px-3 rounded-full">
+                            ▶ Video – Click for Sound
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Image 1 -->
+                <div class="gallery-item reveal" onclick="openLightbox('image', 0)">
+                    <img src="https://cdn.phototourl.com/free/2026-05-22-58b1949f-9af2-4518-a052-690ccfaf0392.jpg" 
+                         alt="Red Rice" class="w-full aspect-square object-cover">
+                    <div class="overlay flex items-center justify-center">
+                        <i data-lucide="zoom-in" class="w-6 h-6 text-white"></i>
+                    </div>
+                </div>
+
+                <!-- Image 2 -->
+                <div class="gallery-item reveal" onclick="openLightbox('image', 1)">
+                    <img src="https://cdn.phototourl.com/free/2026-05-22-717d4be5-7a0f-4d3c-998c-d9415f7a2150.jpg" 
+                         alt="Red Rice" class="w-full aspect-square object-cover">
+                    <div class="overlay flex items-center justify-center">
+                        <i data-lucide="zoom-in" class="w-6 h-6 text-white"></i>
+                    </div>
+                </div>
+
+                <!-- Image 3 -->
+                <div class="gallery-item reveal" onclick="openLightbox('image', 2)">
+                    <img src="https://cdn.phototourl.com/free/2026-05-22-327d62c2-e60c-490f-a88c-64ca359925b9.jpg" 
+                         alt="Red Rice" class="w-full aspect-square object-cover">
+                    <div class="overlay flex items-center justify-center">
+                        <i data-lucide="zoom-in" class="w-6 h-6 text-white"></i>
+                    </div>
+                </div>
+
+                <!-- Image 4 -->
+                <div class="gallery-item reveal" onclick="openLightbox('image', 3)">
+                    <img src="https://cdn.phototourl.com/free/2026-05-22-aa10670e-02c9-4a8a-a343-3412440ec179.jpg" 
+                         alt="Red Rice" class="w-full aspect-square object-cover">
+                    <div class="overlay flex items-center justify-center">
+                        <i data-lucide="zoom-in" class="w-6 h-6 text-white"></i>
+                    </div>
+                </div>
+
+                <!-- Image 5 -->
+                <div class="gallery-item reveal" onclick="openLightbox('image', 4)">
+                    <img src="https://cdn.phototourl.com/free/2026-05-22-e4c55709-9f59-488a-8b32-49f2fd92ef5a.jpg" 
+                         alt="Red Rice" class="w-full aspect-square object-cover">
+                    <div class="overlay flex items-center justify-center">
+                        <i data-lucide="zoom-in" class="w-6 h-6 text-white"></i>
+                    </div>
+                </div>
+
+                <!-- Image 6 -->
+                <div class="gallery-item reveal" onclick="openLightbox('image', 5)">
+                    <img src="https://cdn.phototourl.com/free/2026-05-22-57c41fb7-0c4c-4d96-8005-f73b36cef0d6.jpg" 
+                         alt="Red Rice" class="w-full aspect-square object-cover">
+                    <div class="overlay flex items-center justify-center">
+                        <i data-lucide="zoom-in" class="w-6 h-6 text-white"></i>
+                    </div>
+                </div>
+
+                <!-- Image 7 -->
+                <div class="gallery-item col-span-2 reveal" onclick="openLightbox('image', 6)">
+                    <img src="https://cdn.phototourl.com/free/2026-05-22-90cb3941-3aa2-4bf1-9a76-dc475d0dec4d.jpg" 
+                         alt="Red Rice" class="w-full aspect-[2/1] object-cover">
+                    <div class="overlay flex items-center justify-center">
+                        <i data-lucide="zoom-in" class="w-6 h-6 text-white"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== PRICING ==================== -->
+    <section id="pricing" class="py-24 lg:py-32 relative overflow-hidden">
+        <div class="float-shape w-[500px] h-[500px] bg-rose-200 -bottom-40 -left-40" style="animation-delay: 1s;"></div>
+
+        <div class="max-w-screen-2xl mx-auto px-6 lg:px-10 relative z-10">
+            <!-- Header -->
+            <div class="text-center mb-16 space-y-4">
+                <div class="reveal">
+                    <span class="inline-flex items-center gap-2 bg-rose-50 text-rose-700 text-[10px] font-bold uppercase tracking-widest py-2 px-4 rounded-full">
+                        <span class="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse"></span>
+                        Special Offer
+                    </span>
+                </div>
+                <h2 class="reveal text-3xl lg:text-5xl font-semibold tracking-tight">
+                    Unbeatable <span class="bg-clip-text text-transparent bg-gradient-to-r from-rose-600 to-amber-600">Price</span>
+                </h2>
+                <p class="reveal text-stone-500 text-lg max-w-2xl mx-auto leading-relaxed">
+                    Premium quality red rice at a price that's too good to miss. Limited time offer!
+                </p>
+            </div>
+
+            <!-- Price Card -->
+            <div class="reveal max-w-lg mx-auto">
+                <div class="bg-white rounded-3xl shadow-2xl overflow-hidden ring-1 ring-stone-100 group hover:shadow-transition transition-all duration-500">
+                    <!-- Card Header Image -->
+                    <div class="relative h-64 overflow-hidden">
+                        <img src="https://cdn.phototourl.com/free/2026-05-22-3314b1ac-d51b-453f-b779-0a8da012d750.jpg" 
+                             alt="Red Rice Product" 
+                             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                        <div class="absolute top-4 right-4 bg-rose-600 text-white text-xs font-bold uppercase tracking-widest py-2 px-4 rounded-full animate-pulse">
+                            🔥 50% OFF
+                        </div>
+                        <div class="absolute bottom-6 left-6">
+                            <h3 class="text-white text-2xl font-bold tracking-tight">Granivo Red Rice</h3>
+                            <p class="text-white/70 text-sm mt-1">Premium Quality • 1 Kg Pack</p>
+                        </div>
+                    </div>
+
+                    <!-- Card Body -->
+                    <div class="p-8 space-y-6">
+                        <!-- Price Display -->
+                        <div class="flex items-end gap-4">
+                            <span class="text-5xl font-bold text-stone-900">₹100</span>
+                            <span class="price-strike text-2xl text-stone-400 font-semibold mb-1">₹200</span>
+                            <span class="bg-green-50 text-green-700 text-xs font-bold py-1.5 px-3 rounded-full mb-2">SAVE ₹100</span>
+                        </div>
+
+                        <!-- Features -->
+                        <div class="space-y-3">
+                            <div class="flex items-center gap-3">
+                                <div class="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
+                                    <i data-lucide="check" class="w-3 h-3 text-green-600"></i>
+                                </div>
+                                <span class="text-stone-600 text-sm">100% Natural & Organic Red Rice</span>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <div class="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
+                                    <i data-lucide="check" class="w-3 h-3 text-green-600"></i>
+                                </div>
+                                <span class="text-stone-600 text-sm">Rich in Antioxidants & Fiber</span>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <div class="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
+                                    <i data-lucide="check" class="w-3 h-3 text-green-600"></i>
+                                </div>
+                                <span class="text-stone-600 text-sm">No Preservatives or Chemicals</span>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <div class="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
+                                    <i data-lucide="check" class="w-3 h-3 text-green-600"></i>
+                                </div>
+                                <span class="text-stone-600 text-sm">Freshly Packed & Fast Delivery</span>
+                            </div>
+                        </div>
+
+                        <!-- CTA Buttons -->
+                        <div class="space-y-3 pt-2">
+                            <a href="tel:9499592966" class="btn-shimmer w-full flex items-center justify-center gap-3 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold uppercase tracking-widest py-4 px-8 rounded-xl transition-all duration-300 hover:scale-[1.02] shadow-xl shadow-rose-200" data-text="📞 Call to Order">
+                                <span class="relative z-10 flex items-center gap-3">📞 Call to Order</span>
+                            </a>
+                            <a href="mailto:sales.granivo@gmail.com?subject=Order for Granivo Red Rice&body=Hi, I'd like to order Granivo Red Rice at ₹100 (MRP ₹200). Please confirm my order." 
+                               class="w-full flex items-center justify-center gap-3 bg-stone-900 hover:bg-stone-800 text-white text-xs font-bold uppercase tracking-widest py-4 px-8 rounded-xl transition-all duration-300 hover:scale-[1.02]">
+                                ✉️ Email to Order
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== TESTIMONIALS ==================== -->
+    <section class="py-24 lg:py-32 bg-stone-900 text-white relative overflow-hidden">
+        <div class="float-shape w-[500px] h-[500px] bg-rose-600 top-0 right-0" style="animation-delay: 4s;"></div>
+
+        <div class="max-w-screen-2xl mx-auto px-6 lg:px-10 relative z-10">
+            <div class="text-center mb-16 space-y-4">
+                <div class="reveal">
+                    <span class="inline-flex items-center gap-2 bg-white/10 text-rose-300 text-[10px] font-bold uppercase tracking-widest py-2 px-4 rounded-full border border-white/10">
+                        <span class="w-1.5 h-1.5 rounded-full bg-rose-400"></span>
+                        Customer Love
+                    </span>
+                </div>
+                <h2 class="reveal text-3xl lg:text-5xl font-semibold tracking-tight text-white">
+                    What People <span class="bg-clip-text text-transparent bg-gradient-to-r from-rose-400 to-amber-400">Say</span>
+                </h2>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- Review 1 -->
+                <div class="reveal bg-white/5 backdrop-blur-sm rounded-2xl p-8 border border-white/10 hover:border-white/20 transition-all group">
+                    <div class="flex items-center gap-1 mb-4">
+                        <span class="text-amber-400">★★★★★</span>
+                    </div>
+                    <p class="text-white/70 leading-relaxed mb-6">"Best red rice I've ever tasted! The quality is outstanding and it cooks perfectly every time. My whole family loves it."</p>
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-rose-600/30 flex items-center justify-center">
+                            <span class="text-rose-300 font-bold text-sm">RP</span>
+                        </div>
+                        <div>
+                            <p class="text-white font-semibold text-sm">Rajesh Patel</p>
+                            <p class="text-white/40 text-xs">Verified Buyer</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Review 2 -->
+                <div class="reveal bg-white/5 backdrop-blur-sm rounded-2xl p-8 border border-white/10 hover:border-white/20 transition-all group">
+                    <div class="flex items-center gap-1 mb-4">
+                        <span class="text-amber-400">★★★★★</span>
+                    </div>
+                    <p class="text-white/70 leading-relaxed mb-6">"Switched from white rice to Granivo red rice and the health benefits are visible! Great taste and amazing value at ₹100."</p>
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-amber-600/30 flex items-center justify-center">
+                            <span class="text-amber-300 font-bold text-sm">SM</span>
+                        </div>
+                        <div>
+                            <p class="text-white font-semibold text-sm">Sneha Mehta</p>
+                            <p class="text-white/40 text-xs">Verified Buyer</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Review 3 -->
+                <div class="reveal bg-white/5 backdrop-blur-sm rounded-2xl p-8 border border-white/10 hover:border-white/20 transition-all group">
+                    <div class="flex items-center gap-1 mb-4">
+                        <span class="text-amber-400">★★★★★</span>
+                    </div>
+                    <p class="text-white/70 leading-relaxed mb-6">"Fast delivery, excellent packaging, and the rice quality is top-notch. Already ordered my third pack! Highly recommended."</p>
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-green-600/30 flex items-center justify-center">
+                            <span class="text-green-300 font-bold text-sm">AK</span>
+                        </div>
+                        <div>
+                            <p class="text-white font-semibold text-sm">Amit Kumar</p>
+                            <p class="text-white/40 text-xs">Verified Buyer</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== CONTACT ==================== -->
+    <section id="contact" class="py-24 lg:py-32 relative overflow-hidden">
+        <div class="float-shape w-[500px] h-[500px] bg-amber-200 top-20 -right-40" style="animation-delay: 2s;"></div>
+
+        <div class="max-w-screen-2xl mx-auto px-6 lg:px-10 relative z-10">
+            <div class="grid lg:grid-cols-2 gap-16 lg:gap-24">
+                <!-- Contact Info -->
+                <div class="space-y-8">
+                    <div class="reveal">
+                        <span class="inline-flex items-center gap-2 bg-rose-50 text-rose-700 text-[10px] font-bold uppercase tracking-widest py-2 px-4 rounded-full">
+                            <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
+                            Get in Touch
+                        </span>
+                    </div>
+                    <h2 class="reveal text-3xl lg:text-5xl font-semibold tracking-tight leading-tight">
+                        Ready to<br>
+                        <span class="bg-clip-text text-transparent bg-gradient-to-r from-rose-600 to-amber-600">Order Now?</span>
+                    </h2>
+                    <p class="reveal text-stone-500 text-lg leading-relaxed">
+                        Contact us today to place your order. We offer fast delivery and the best quality red rice at an unbeatable price.
+                    </p>
+
+                    <div class="space-y-6 pt-4">
+                        <!-- Phone 1 -->
+                        <div class="reveal flex items-center gap-4 group">
+                            <a href="tel:9499592966" class="flex-shrink-0 w-14 h-14 rounded-2xl bg-rose-50 flex items-center justify-center group-hover:bg-rose-100 transition-colors">
+                                <i data-lucide="phone" class="w-5 h-5 text-rose-600"></i>
+                            </a>
+                            <div>
+                                <p class="text-xs text-stone-400 uppercase tracking-widest font-bold">Phone 1</p>
+                                <a href="tel:9499592966" class="text-lg font-semibold text-stone-900 hover:text-rose-600 transition-colors">9499592966</a>
+                            </div>
+                        </div>
+
+                        <!-- Phone 2 -->
+                        <div class="reveal flex items-center gap-4 group">
+                            <a href="tel:9054970440" class="flex-shrink-0 w-14 h-14 rounded-2xl bg-rose-50 flex items-center justify-center group-hover:bg-rose-100 transition-colors">
+                                <i data-lucide="phone" class="w-5 h-5 text-rose-600"></i>
+                            </a>
+                            <div>
+                                <p class="text-xs text-stone-400 uppercase tracking-widest font-bold">Phone 2</p>
+                                <a href="tel:9054970440" class="text-lg font-semibold text-stone-900 hover:text-rose-600 transition-colors">9054970440</a>
+                            </div>
+                        </div>
+
+                        <!-- Email -->
+                        <div class="reveal flex items-center gap-4 group">
+                            <a href="mailto:sales.granivo@gmail.com" class="flex-shrink-0 w-14 h-14 rounded-2xl bg-amber-50 flex items-center justify-center group-hover:bg-amber-100 transition-colors">
+                                <i data-lucide="mail" class="w-5 h-5 text-amber-600"></i>
+                            </a>
+                            <div>
+                                <p class="text-xs text-stone-400 uppercase tracking-widest font-bold">Email</p>
+                                <a href="mailto:sales.granivo@gmail.com" class="text-lg font-semibold text-stone-900 hover:text-rose-600 transition-colors break-all">sales.granivo@gmail.com</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Order Form -->
+                <div class="reveal">
+                    <div class="bg-white rounded-3xl shadow-xl p-8 lg:p-10 ring-1 ring-stone-100">
+                        <h3 class="text-xl font-semibold tracking-tight mb-2">Quick Order</h3>
+                        <p class="text-stone-500 text-sm mb-8">Fill in your details and we'll get back to you ASAP.</p>
+
+                        <form id="orderForm" class="space-y-5" onsubmit="handleOrderForm(event)">
+                            <div>
+                                <label class="block text-xs font-bold uppercase tracking-widest text-stone-400 mb-2">Full Name</label>
+                                <input type="text" required placeholder="Your name" 
+                                       class="w-full px-4 py-3 rounded-xl border border-stone-200 focus:border-rose-400 focus:ring-2 focus:ring-rose-100 outline-none transition-all text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold uppercase tracking-widest text-stone-400 mb-2">Phone Number</label>
+                                <input type="tel" required placeholder="Your phone number" 
+                                       class="w-full px-4 py-3 rounded-xl border border-stone-200 focus:border-rose-400 focus:ring-2 focus:ring-rose-100 outline-none transition-all text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold uppercase tracking-widest text-stone-400 mb-2">Quantity (Kg)</label>
+                                <select required class="w-full px-4 py-3 rounded-xl border border-stone-200 focus:border-rose-400 focus:ring-2 focus:ring-rose-100 outline-none transition-all text-sm bg-white">
+                                    <option value="">Select quantity</option>
+                                    <option value="1">1 Kg – ₹100</option>
+                                    <option value="2">2 Kg – ₹200</option>
+                                    <option value="5">5 Kg – ₹500</option>
+                                    <option value="10">10 Kg – ₹1000</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold uppercase tracking-widest text-stone-400 mb-2">Address</label>
+                                <textarea required rows="3" placeholder="Delivery address" 
+                                          class="w-full px-4 py-3 rounded-xl border border-stone-200 focus:border-rose-400 focus:ring-2 focus:ring-rose-100 outline-none transition-all text-sm resize-none"></textarea>
+                            </div>
+                            <button type="submit" class="w-full flex items-center justify-center gap-3 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold uppercase tracking-widest py-4 px-8 rounded-xl transition-all duration-300 hover:scale-[1.02] shadow-xl shadow-rose-200">
+                                Place Order <i data-lucide="send" class="w-4 h-4"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== FOOTER ==================== -->
+    <footer class="bg-stone-900 text-white py-16">
+        <div class="max-w-screen-2xl mx-auto px-6 lg:px-10">
+            <div class="grid md:grid-cols-3 gap-12 items-start">
+                <!-- Brand -->
+                <div class="space-y-4">
+                    <div class="flex items-center gap-3">
+                        <img src="https://cdn.phototourl.com/member/2026-05-22-7e95c039-b783-4163-94e8-61a03c49ae7f.jpg" 
+                             alt="Granivo" class="w-10 h-10 rounded-full object-cover">
+                        <span class="text-xl font-bold tracking-tight">Granivo</span>
+                    </div>
+                    <p class="text-white/50 text-sm leading-relaxed max-w-xs">Premium quality red rice, naturally grown and freshly packed. Nourishing lives since generations.</p>
+                </div>
+
+                <!-- Links -->
+                <div class="space-y-4">
+                    <h4 class="text-xs font-bold uppercase tracking-widest text-white/40">Quick Links</h4>
+                    <div class="space-y-3">
+                        <a href="#home" class="block text-white/60 hover:text-white text-sm transition-colors">Home</a>
+                        <a href="#about" class="block text-white/60 hover:text-white text-sm transition-colors">About Red Rice</a>
+                        <a href="#gallery" class="block text-white/60 hover:text-white text-sm transition-colors">Gallery</a>
+                        <a href="#pricing" class="block text-white/60 hover:text-white text-sm transition-colors">Pricing</a>
+                        <a href="#contact" class="block text-white/60 hover:text-white text-sm transition-colors">Contact</a>
+                    </div>
+                </div>
+
+                <!-- Contact -->
+                <div class="space-y-4">
+                    <h4 class="text-xs font-bold uppercase tracking-widest text-white/40">Contact</h4>
+                    <div class="space-y-3">
+                        <a href="tel:9499592966" class="flex items-center gap-2 text-white/60 hover:text-white text-sm transition-colors">
+                            <i data-lucide="phone" class="w-4 h-4"></i> 9499592966
+                        </a>
+                        <a href="tel:9054970440" class="flex items-center gap-2 text-white/60 hover:text-white text-sm transition-colors">
+                            <i data-lucide="phone" class="w-4 h-4"></i> 9054970440
+                        </a>
+                        <a href="mailto:sales.granivo@gmail.com" class="flex items-center gap-2 text-white/60 hover:text-white text-sm transition-colors">
+                            <i data-lucide="mail" class="w-4 h-4"></i> sales.granivo@gmail.com
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="border-t border-white/10 mt-12 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
+                <p class="text-white/30 text-xs">© 2025 Granivo. All rights reserved.</p>
+                <p class="text-white/30 text-xs">Premium Red Rice • 100% Natural • Made with ❤️</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ==================== LIGHTBOX ==================== -->
+    <div id="lightbox" class="lightbox" onclick="closeLightbox(event)">
+        <button onclick="closeLightbox(event, true)" class="absolute top-6 right-6 z-10 bg-white/10 hover:bg-white/20 backdrop-blur-md text-white p-3 rounded-full border border-white/10 transition-all">
+            <i data-lucide="x" class="w-6 h-6"></i>
+        </button>
+        <div id="lightboxContent" onclick="event.stopPropagation()"></div>
+    </div>
+
+    <!-- ==================== TOAST ==================== -->
+    <div id="toast" class="toast"></div>
+
+    <!-- ==================== WHATSAPP FAB ==================== -->
+    <a href="https://wa.me/919499592966?text=Hi%2C%20I%20want%20to%20order%20Granivo%20Red%20Rice%20at%20%E2%82%B9100" 
+       target="_blank"
+       class="fixed bottom-6 right-6 z-50 bg-green-500 hover:bg-green-600 text-white p-4 rounded-full shadow-2xl shadow-green-500/30 transition-all hover:scale-110 group">
+        <svg class="w-7 h-7" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+    </a>
+
+    <!-- ==================== SCRIPTS ==================== -->
+    <script>
+        // Initialize Lucide Icons
+        lucide.createIcons();
+
+        // ---- SCROLL REVEAL ----
+        const revealElements = document.querySelectorAll('.reveal');
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach((entry, index) => {
+                if (entry.isIntersecting) {
+                    setTimeout(() => {
+                        entry.target.classList.add('active');
+                    }, index * 100);
+                    revealObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.15, rootMargin: '0px 0px -50px 0px' });
+        revealElements.forEach(el => revealObserver.observe(el));
+
+        // ---- NAV SCROLL ----
+        const header = document.getElementById('header');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                header.classList.add('nav-scrolled');
+                header.classList.remove('py-5');
+                header.classList.add('py-3');
+            } else {
+                header.classList.remove('nav-scrolled');
+                header.classList.add('py-5');
+                header.classList.remove('py-3');
+            }
+        });
+
+        // ---- MOBILE MENU ----
+        const menuBtn = document.getElementById('menuBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+        const closeMenuBtn = document.getElementById('closeMenu');
+
+        menuBtn.addEventListener('click', () => mobileMenu.classList.add('open'));
+        closeMenuBtn.addEventListener('click', () => mobileMenu.classList.remove('open'));
+        function closeMobileMenu() { mobileMenu.classList.remove('open'); }
+
+        // ---- LIGHTBOX ----
+        const galleryImages = [
+            'https://cdn.phototourl.com/free/2026-05-22-58b1949f-9af2-4518-a052-690ccfaf0392.jpg',
+            'https://cdn.phototourl.com/free/2026-05-22-717d4be5-7a0f-4d3c-998c-d9415f7a2150.jpg',
+            'https://cdn.phototourl.com/free/2026-05-22-327d62c2-e60c-490f-a88c-64ca359925b9.jpg',
+            'https://cdn.phototourl.com/free/2026-05-22-aa10670e-02c9-4a8a-a343-3412440ec179.jpg',
+            'https://cdn.phototourl.com/free/2026-05-22-e4c55709-9f59-488a-8b32-49f2fd92ef5a.jpg',
+            'https://cdn.phototourl.com/free/2026-05-22-57c41fb7-0c4c-4d96-8005-f73b36cef0d6.jpg',
+            'https://cdn.phototourl.com/free/2026-05-22-90cb3941-3aa2-4bf1-9a76-dc475d0dec4d.jpg'
+        ];
+        const videoUrl = 'https://www.image2url.com/r2/default/videos/1779430968070-e46eff45-54af-4861-9f79-638d5c49b56c.mp4';
+        const lightbox = document.getElementById('lightbox');
+        const lightboxContent = document.getElementById('lightboxContent');
+
+        function openLightbox(type, index) {
+            lightboxContent.innerHTML = '';
+            if (type === 'video') {
+                // Open video WITH sound
+                const video = document.createElement('video');
+                video.src = videoUrl;
+                video.controls = true;
+                video.autoplay = true;
+                video.style.maxWidth = '90vw';
+                video.style.maxHeight = '85vh';
+                video.style.borderRadius = '16px';
+                video.style.objectFit = 'contain';
+                lightboxContent.appendChild(video);
+            } else {
+                const img = document.createElement('img');
+                img.src = galleryImages[index];
+                img.alt = 'Red Rice Gallery';
+                lightboxContent.appendChild(img);
+            }
+            lightbox.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeLightbox(event, force) {
+            if (force || event.target === lightbox) {
+                lightbox.classList.remove('open');
+                document.body.style.overflow = '';
+                // Pause video if playing
+                const video = lightboxContent.querySelector('video');
+                if (video) video.pause();
+            }
+        }
+
+        // Close on Escape
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeLightbox(null, true);
+        });
+
+        // ---- HERO VIDEO MUTED AUTOPLAY ----
+        const heroVideo = document.getElementById('heroVideo');
+        heroVideo.muted = true;
+        heroVideo.play().catch(() => {});
+
+        // ---- ORDER FORM ----
+        function handleOrderForm(e) {
+            e.preventDefault();
+            showToast('✅ Order placed! We will contact you shortly.');
+            e.target.reset();
+        }
+
+        // ---- TOAST ----
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3500);
+        }
+    </script>
+</body>
+</html>
